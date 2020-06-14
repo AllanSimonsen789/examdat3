@@ -1,6 +1,7 @@
 package facades;
 
 import entities.RenameMe;
+import entities.RenameMeTwo;
 import java.sql.SQLException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -15,7 +16,6 @@ import utils.EMF_Creator;
 import utils.EMF_Creator.DbSelector;
 import utils.EMF_Creator.Strategy;
 
-
 //Uncomment the line below, to temporarily disable this test
 //@Disabled
 public class FacadeExampleTest {
@@ -23,6 +23,7 @@ public class FacadeExampleTest {
     private static EntityManagerFactory emf;
     private static FacadeExample facade;
     private static RenameMe r1, r2;
+    private static RenameMeTwo r3, r4;
 
     public FacadeExampleTest() {
     }
@@ -46,8 +47,8 @@ public class FacadeExampleTest {
      */
     @BeforeAll
     public static void setUpClassV2() {
-       emf = EMF_Creator.createEntityManagerFactory(DbSelector.TEST,Strategy.DROP_AND_CREATE);
-       facade = FacadeExample.getFacadeExample(emf);
+        emf = EMF_Creator.createEntityManagerFactory(DbSelector.TEST, Strategy.DROP_AND_CREATE);
+        facade = FacadeExample.getFacadeExample(emf);
     }
 
     @AfterAll
@@ -62,11 +63,20 @@ public class FacadeExampleTest {
         EntityManager em = emf.createEntityManager();
         r1 = new RenameMe("Some txt", "More text");
         r2 = new RenameMe("aaa", "bbb");
+        r3 = new RenameMeTwo("aaaaaah", "ooooooh");
+        r4 = new RenameMeTwo("spagethhiee", "mamaaaa");
+
         try {
             em.getTransaction().begin();
             em.createNamedQuery("RenameMe.deleteAllRows").executeUpdate();
             em.persist(r1);
             em.persist(r2);
+            em.persist(r3);
+            em.persist(r4);
+            r1.addRenameMeTwo(r3);
+            r1.addRenameMeTwo(r4);
+            r2.addRenameMeTwo(r3);
+            r2.addRenameMeTwo(r4);
 
             em.getTransaction().commit();
         } finally {
@@ -84,10 +94,10 @@ public class FacadeExampleTest {
     public void testAFacadeMethod() {
         assertEquals(2, facade.getRenameMeCount(), "Expects two rows in the database");
     }
-    
-     @Test
+
+    @Test
     public void testAddPerson() {
-        
+
         RenameMe rm = new RenameMe("hello", "hello");
         RenameMe postedresult = facade.addRenameMe("hello");
         assertTrue(rm.equals(postedresult));
@@ -99,13 +109,19 @@ public class FacadeExampleTest {
         RenameMe putresult = facade.editRenameMe("hello from the other side", r1.getId());
         assertTrue(rm.equals(putresult));
     }
-    
+
     @Test
-    public void testDelete() throws SQLException{
+    public void testDelete() throws SQLException {
         assertEquals(2, facade.getRenameMeCount(), "Expects two rows in the database");
         facade.delete(r2.getId());
         assertEquals(1, facade.getRenameMeCount(), "Expects one rows in the database");
 
+    }
+
+    @Test
+    public void testManyToMany() throws SQLException {
+        assertEquals(2, facade.getRenameMe(r1.getId()).getRenameMeTwos().size());
+        assertEquals(2, facade.getRenameMe(r2.getId()).getRenameMeTwos().size());
     }
 
 }

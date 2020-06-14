@@ -45,6 +45,22 @@ public class FacadeExample {
             em.close();
         }
     }
+    
+    public long getRelationCount() {
+        EntityManager em = getEntityManager();
+        try {
+            long renameMeCount = (long) em.createQuery("SELECT COUNT(r) FROM RenameMe r").getSingleResult();
+            return renameMeCount;
+        } finally {
+            em.close();
+        }
+    }
+    
+    public RenameMe getRenameMe(long id){
+        EntityManager em = getEntityManager();
+        return em.find(RenameMe.class, id);
+    }
+    
     //IMPORTANT DO NOT RETURN ENTITY CLASS! MAKE A DTO
     public RenameMe addRenameMe(String str) {
         EntityManager em = getEntityManager();

@@ -13,17 +13,17 @@ import javax.persistence.NamedQuery;
 
 
 @Entity
-@NamedQuery(name = "RenameMe.deleteAllRows", query = "DELETE from RenameMe")
-public class RenameMe implements Serializable {
+@NamedQuery(name = "RenameMeTwo.deleteAllRows", query = "DELETE from RenameMeTwo")
+public class RenameMeTwo implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToMany
-    private List<RenameMeTwo> renameMeTwos;
+    @ManyToMany(mappedBy = "renameMeTwos")
+    private List<RenameMe> renameMe;
     
-    public RenameMe() {
+    public RenameMeTwo() {
     }
         
     public Long getId() {
@@ -34,22 +34,19 @@ public class RenameMe implements Serializable {
         this.id = id;
     }
     
-    
-    
     // TODO, delete this class, or rename to an Entity class that makes sense for what you are about to do
     // Delete EVERYTHING below if you decide to use this class, it's dummy data used for the initial demo
     private String dummyStr1;
     private String dummyStr2;
 
-    public RenameMe(String dummyStr1, String dummyStr2) {
+    public RenameMeTwo(String dummyStr1, String dummyStr2) {
         this.dummyStr1 = dummyStr1;
         this.dummyStr2 = dummyStr2;
-        renameMeTwos = new ArrayList<>();
+        renameMe = new ArrayList<>();
     }
     
-    public void addRenameMeTwo(RenameMeTwo rmt){
-        renameMeTwos.add(rmt);
-        rmt.addRenameMe(this);
+    public void addRenameMe(RenameMe rm){
+        renameMe.add(rm);
     }
 
     public String getDummyStr1() {
@@ -68,15 +65,6 @@ public class RenameMe implements Serializable {
         this.dummyStr2 = dummyStr2;
     }
 
-    public List<RenameMeTwo> getRenameMeTwos() {
-        return renameMeTwos;
-    }
-
-    public void setRenameMeTwos(List<RenameMeTwo> renameMeTwos) {
-        this.renameMeTwos = renameMeTwos;
-    }
-
-    
     @Override
     public int hashCode() {
         int hash = 3;
@@ -96,7 +84,7 @@ public class RenameMe implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final RenameMe other = (RenameMe) obj;
+        final RenameMeTwo other = (RenameMeTwo) obj;
         if (!Objects.equals(this.dummyStr1, other.dummyStr1)) {
             return false;
         }
