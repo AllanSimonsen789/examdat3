@@ -6,7 +6,6 @@
 package dto;
 
 import entities.YogaClass;
-import java.util.Date;
 
 /**
  *
@@ -14,19 +13,19 @@ import java.util.Date;
  */
 public class YogaClassDTO {
     private int id;
-    private Date date;
+    private String courseTime;
     private int room;
     private int courseID;
 
-    public YogaClassDTO(Date date, int room, int courseID) {
-        this.date = date;
+    public YogaClassDTO(String courseTime, int room, int courseID) {
+        this.courseTime = courseTime;
         this.room = room;
         this.courseID = courseID;
     }
     
-    public YogaClassDTO(int id, Date date, int room) {
+    public YogaClassDTO(int id, String courseTime, int room) {
         this.id = id;
-        this.date = date;
+        this.courseTime = courseTime;
         this.room = room;
     }
 
@@ -34,7 +33,7 @@ public class YogaClassDTO {
     
     public YogaClassDTO(YogaClass yc) {
         this.id = yc.getId();
-        this.date = yc.getDate();
+        this.courseTime = yc.getCourseTime();
         this.room = yc.getRoom();
         this.courseID = (yc.getCourse() != null ? yc.getCourse().getId() : 0);
     }
@@ -43,8 +42,8 @@ public class YogaClassDTO {
         return id;
     }
 
-    public Date getDate() {
-        return date;
+    public String getCourseTime() {
+        return courseTime;
     }
 
     public int getRoom() {
@@ -57,7 +56,7 @@ public class YogaClassDTO {
 
     @Override
     public String toString() {
-        return "YogaClassDTO{" + "id=" + id + ", date=" + date + ", room=" + room + ", courseID=" + courseID + '}';
+        return "YogaClassDTO{" + "id=" + id + ", courseTime=" + courseTime + ", room=" + room + ", courseID=" + courseID + '}';
     }
 
     

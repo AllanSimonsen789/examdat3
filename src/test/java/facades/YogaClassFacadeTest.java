@@ -8,7 +8,6 @@ package facades;
 import dto.YogaClassDTO;
 import entities.YogaClass;
 import errorhandling.NotFoundException;
-import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.AfterAll;
@@ -56,9 +55,9 @@ public class YogaClassFacadeTest {
     @BeforeEach
     public void setUp() {
         EntityManager em = emf.createEntityManager();
-        yc1 = new YogaClass(new Date(2020, 06, 15, 14, 50, 0), 1);
-        yc2 = new YogaClass(new Date(2020, 07, 15, 14, 50, 0), 2);
-        yc3 = new YogaClass(new Date(2020, 03, 15, 14, 50, 0), 42);
+        yc1 = new YogaClass("2020-04-21 14:30:00.0", 1);
+        yc2 = new YogaClass("2020-05-21 14:30:00.0", 2);
+        yc3 = new YogaClass("2020-06-21 14:30:00.0", 42);
         try {
             em.getTransaction().begin();
             em.createNamedQuery("YogaClass.deleteAllRows").executeUpdate();
@@ -78,16 +77,16 @@ public class YogaClassFacadeTest {
 
     @Test
     public void test_editYogaClass_ReturnsEditClass_EqualResults() throws NotFoundException {
-        YogaClass expectedClass = new YogaClass(yc1.getId(), new Date(2020, 02, 10, 12, 21, 0), 10);
+        YogaClass expectedClass = new YogaClass(yc1.getId(), "2020-01-21 14:30:00.0", 10);
         YogaClass resultClass = new YogaClass(facade.editYogaClass(new YogaClassDTO(expectedClass)));
         assertEquals(expectedClass.getId(), resultClass.getId());
-        assertEquals(expectedClass.getDate(), resultClass.getDate());
+        assertEquals(expectedClass.getCourseTime(), resultClass.getCourseTime());
         assertEquals(expectedClass.getRoom(), resultClass.getRoom());
     }
 
     @Test
     public void test_editYogaClass_InvalidClassID_ExceptionAssertion() {
-        YogaClass expectedClass = new YogaClass(-1, new Date(2020, 02, 10, 12, 21, 0), 10);
+        YogaClass expectedClass = new YogaClass(-1, "2020-07-21 14:30:00.0", 10);
         Exception exception = assertThrows(NotFoundException.class, () -> {
             facade.editYogaClass(new YogaClassDTO(expectedClass));
 

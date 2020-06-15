@@ -8,12 +8,16 @@ package entities;
 import dto.CourseDTO;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
@@ -33,8 +37,14 @@ public class Course implements Serializable {
     private String description;
     private int maxParticipants;
     private double price;
-    @OneToMany(mappedBy = "course")
+    @OneToMany(
+        mappedBy = "course",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
     private List<YogaClass> classes;
+    @ManyToMany
+    private Set<Instructor> instructors;
 
     public Course() {
     }
@@ -46,6 +56,7 @@ public class Course implements Serializable {
         this.maxParticipants = cdto.getMaxParticipants();
         this.price = cdto.getPrice();
         this.classes = new ArrayList<>();
+        this.instructors = new HashSet<>();
     }
 
     public Course(String courseName, String description, int maxParticipants, double price) {
@@ -54,6 +65,9 @@ public class Course implements Serializable {
         this.maxParticipants = maxParticipants;
         this.price = price;
         this.classes = new ArrayList<>();
+        this.instructors = new HashSet<>();
+        
+
     }
 
     public Course(int id, String courseName, String description, int maxParticipants, double price) {
@@ -63,8 +77,10 @@ public class Course implements Serializable {
         this.maxParticipants = maxParticipants;
         this.price = price;
         this.classes = new ArrayList<>();
-    }    
-    
+        this.instructors = new HashSet<>();
+
+    }
+
     public int getId() {
         return id;
     }
@@ -113,15 +129,31 @@ public class Course implements Serializable {
         this.classes = classes;
     }
 
+    public Set<Instructor> getInstructors() {
+        return instructors;
+    }
+
+    public void setInstructors(Set<Instructor> instructors) {
+        this.instructors = instructors;
+    }
     
+    public void addClasses(YogaClass yc) {
+        classes.add(yc);
+    }
     
+    public void addInstructor(Instructor i){
+        instructors.add(i);
+    }
+
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 79 * hash + Objects.hashCode(this.courseName);
-        hash = 79 * hash + Objects.hashCode(this.description);
-        hash = 79 * hash + this.maxParticipants;
-        hash = 79 * hash + (int) (Double.doubleToLongBits(this.price) ^ (Double.doubleToLongBits(this.price) >>> 32));
+        hash = 71 * hash + Objects.hashCode(this.courseName);
+        hash = 71 * hash + Objects.hashCode(this.description);
+        hash = 71 * hash + this.maxParticipants;
+        hash = 71 * hash + (int) (Double.doubleToLongBits(this.price) ^ (Double.doubleToLongBits(this.price) >>> 32));
+        hash = 71 * hash + Objects.hashCode(this.classes);
+        hash = 71 * hash + Objects.hashCode(this.instructors);
         return hash;
     }
 
@@ -149,13 +181,22 @@ public class Course implements Serializable {
         if (!Objects.equals(this.description, other.description)) {
             return false;
         }
+        if (!Objects.equals(this.classes, other.classes)) {
+            return false;
+        }
+        if (!Objects.equals(this.instructors, other.instructors)) {
+            return false;
+        }
         return true;
     }
 
+    
+
     @Override
     public String toString() {
-        return "Course{" + "id=" + id + ", courseName=" + courseName + ", Description=" + description + ", maxParticipants=" + maxParticipants + ", price=" + price + '}';
+        return "Course{" + "id=" + id + ", courseName=" + courseName + ", description=" + description + ", maxParticipants=" + maxParticipants + ", price=" + price + ", classes=" + classes + ", instructors=" + instructors + '}';
     }
 
     
+
 }

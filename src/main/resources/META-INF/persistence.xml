@@ -7,6 +7,7 @@
     <class>entities.renameMeTwo</class>
     <class>entities.Course</class>
     <class>entities.YogaClass</class>
+    <class>entities.Instructor</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <!-- DO NOT remove the line below. It's not set by the  entityUtils.EMF_Creator -->

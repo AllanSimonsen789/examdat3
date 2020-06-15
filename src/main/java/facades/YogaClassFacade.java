@@ -51,6 +51,7 @@ public class YogaClassFacade {
         try {
             em.getTransaction().begin();
             em.persist(yogaclass);
+            yogaclass.getCourse().addClasses(yogaclass);
             em.getTransaction().commit();
             return new YogaClassDTO(yogaclass);
         } finally {
@@ -66,8 +67,8 @@ public class YogaClassFacade {
             if (yogaclass == null) {
                 throw new NotFoundException("Could not find Class with provided ID");
             }
-            yogaclass.setDate(ycDTO.getDate());
-            yogaclass.setRoome(ycDTO.getRoom());
+            yogaclass.setcourseTime(ycDTO.getCourseTime());
+            yogaclass.setRoom(ycDTO.getRoom());
             em.getTransaction().commit();
             return new YogaClassDTO(yogaclass);
         } finally {

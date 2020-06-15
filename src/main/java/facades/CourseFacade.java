@@ -2,8 +2,10 @@ package facades;
 
 import dto.CourseDTO;
 import dto.CourseListDTO;
+import dto.InstructorDTO;
 import dto.YogaClassDTO;
 import entities.Course;
+import entities.Instructor;
 import entities.YogaClass;
 import errorhandling.NotFoundException;
 import java.sql.SQLException;
@@ -125,13 +127,33 @@ public class CourseFacade {
         try {
             em.getTransaction().begin();
             Course course = em.find(Course.class, ycdto.getCourseID());
-            em.getTransaction().commit();
+            
             if (course == null) {
                 throw new NotFoundException("Could not find course with provided ID");
             }
             YogaClass yc = new YogaClass(ycdto);
             yc.setCourse(course);
+            em.getTransaction().commit();
             return YCFACADE.addYogaClass(yc);
+        } finally {
+            em.close();
+        }
+    }
+    
+    public InstructorDTO addInstructor(InstructorDTO idto) throws NotFoundException{
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Course course = em.find(Course.class, idto.getCourseID());
+            
+            if (course == null) {
+                throw new NotFoundException("Could not find course with provided ID");
+            }
+            Instructor i = new Instructor(idto);
+            em.persist(i);
+            course.addInstructor(i);
+            em.getTransaction().commit();
+            return new InstructorDTO(i);
         } finally {
             em.close();
         }

@@ -1,11 +1,11 @@
 package facades;
 
 import dto.CourseDTO;
+import dto.InstructorDTO;
 import dto.YogaClassDTO;
 import entities.Course;
 import errorhandling.NotFoundException;
 import java.sql.SQLException;
-import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.AfterAll;
@@ -57,6 +57,7 @@ public class CourseFacadeTest {
         c3 = new Course("Beginner Flexibility", "Learn the basic excersises to become more flexible, this course gives acces to the advanced course", 25, 249.95);
         try {
             em.getTransaction().begin();
+            em.createNamedQuery("Instructor.deleteAllRows").executeUpdate();
             em.createNamedQuery("YogaClass.deleteAllRows").executeUpdate();
             em.createNamedQuery("Course.deleteAllRows").executeUpdate();
             em.persist(c1);
@@ -132,10 +133,10 @@ public class CourseFacadeTest {
     
     @Test
     public void test_addYogaClass_ReturnsNewYogaClass_EqualResults() throws NotFoundException {
-        YogaClassDTO expectedYogaClass = new YogaClassDTO(new Date(2020, 06, 15, 14, 50, 00), 1,c2.getId());
+        YogaClassDTO expectedYogaClass = new YogaClassDTO("2020-04-21 14:30:00.0", 1,c2.getId());
         YogaClassDTO resultYogaClass = facade.addYogaClassToCourse(expectedYogaClass);
         assertNotNull(resultYogaClass.getId());
-        assertEquals(expectedYogaClass.getDate(), resultYogaClass.getDate());
+        assertEquals(expectedYogaClass.getCourseTime(), resultYogaClass.getCourseTime());
         assertEquals(expectedYogaClass.getRoom(), resultYogaClass.getRoom());
         assertEquals(expectedYogaClass.getCourseID(), resultYogaClass.getCourseID());
 
@@ -143,7 +144,7 @@ public class CourseFacadeTest {
     
     @Test
     public void test_addYogaClass_InvalidCourseID_ExceptionAssertion() throws NotFoundException {
-        YogaClassDTO expectedYogaClass = new YogaClassDTO(new Date(2020, 06, 15, 14, 50, 00), 1, -1);
+        YogaClassDTO expectedYogaClass = new YogaClassDTO("2020-04-21 14:30:00.0", 1, -1);
         Exception exception = assertThrows(NotFoundException.class, () -> {
             YogaClassDTO resultYogaClass = facade.addYogaClassToCourse(expectedYogaClass);
 
@@ -151,5 +152,15 @@ public class CourseFacadeTest {
         String expectedMessage = "Could not find course with provided ID";
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
+    }
+    
+    @Test
+    public void test_addInstructor_ReturnsNewInstructor_EqualResults() throws NotFoundException {
+        InstructorDTO expectedInstructor = new InstructorDTO("Allan Simonsen", 200, c3.getId());
+        InstructorDTO resultInstructor = facade.addInstructor(expectedInstructor);
+        assertNotNull(resultInstructor.getId());
+        assertEquals(expectedInstructor.getName(), resultInstructor.getName());
+        assertEquals(expectedInstructor.getSalary(), resultInstructor.getSalary());
+
     }
 }

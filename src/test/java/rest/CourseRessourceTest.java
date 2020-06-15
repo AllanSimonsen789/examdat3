@@ -11,7 +11,6 @@ import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
 import java.net.URI;
 import java.sql.SQLException;
-import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.UriBuilder;
@@ -79,7 +78,7 @@ public class CourseRessourceTest {
         c1 = new Course("How to cope with Exam Pressure", "Learn to control your stress levels during exam period", 40, 200.0);
         c2 = new Course("Advanced Flexibility", "Advanced class! Become more flexible than ever!", 10, 499.95);
         c3 = new Course("Beginner Flexibility", "Learn the basic excersises to become more flexible, this course gives acces to the advanced course", 25, 249.95);
-        yc1 = new YogaClass(new Date(2020, 06, 15, 14, 50, 00), 1);
+        yc1 = new YogaClass("2020-12-21 14:30:00.0", 1);
         try {
             em.getTransaction().begin();
             em.createNamedQuery("YogaClass.deleteAllRows").executeUpdate();
@@ -180,7 +179,7 @@ public class CourseRessourceTest {
     
      @Test
     public void test_addClass_ReturnsNewClass_EqualResults() {
-        YogaClassDTO expectedYogaClass = new YogaClassDTO(new Date(2020, 06, 15, 14, 50, 00), 1,c3.getId());
+        YogaClassDTO expectedYogaClass = new YogaClassDTO("2020-04-21 14:30:00.0", 1,c3.getId());
         String json = GSON.toJson(expectedYogaClass);
         given().contentType(ContentType.JSON)
                 .body(json)
@@ -190,13 +189,13 @@ public class CourseRessourceTest {
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
                 .body("id", notNullValue())
-                .body("date", notNullValue())
+                .body("courseTime", notNullValue())
                 .body("room", is(expectedYogaClass.getRoom()));
     }
 
     @Test
     public void test_addClass_InvalidCourseID_ExceptionAssertion() {
-        YogaClassDTO expectedYogaClass = new YogaClassDTO(new Date(2020, 06, 15, 14, 50, 00), 1,-1);
+        YogaClassDTO expectedYogaClass = new YogaClassDTO("2020-04-21 14:30:00.0", 1,-1);
         String json = GSON.toJson(expectedYogaClass);
         given().contentType(ContentType.JSON)
                 .body(json)
@@ -207,9 +206,8 @@ public class CourseRessourceTest {
                 .statusCode(HttpStatus.NOT_FOUND_404.getStatusCode());
     }
     
-        @Test
-    public void test_editClass_ReturnsEditedClass_EqualResults() throws SQLException {     
-        YogaClassDTO expectedYogaClass = new YogaClassDTO(yc1.getId(), new Date(2020, 06, 15, 14, 50, 00), 54);
+    public void test_editClass_ReturnsEditedClass_EqualResults() {     
+        YogaClassDTO expectedYogaClass = new YogaClassDTO(yc1.getId(), "2020-04-21 14:30:00.0", 54);
         String json = GSON.toJson(expectedYogaClass);
         given().contentType(ContentType.JSON)
                 .body(json)
@@ -219,12 +217,12 @@ public class CourseRessourceTest {
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
                 .body("id", notNullValue())
-                .body("date", notNullValue())
+                .body("courseTime", notNullValue())
                 .body("room", is(expectedYogaClass.getRoom()));
     }
     @Test
     public void test_editClass_InvalidClassID_ExceptionAssertion() {
-        YogaClassDTO expectedYogaClass = new YogaClassDTO(-1, new Date(2020, 06, 15, 14, 50, 00), 54);
+        YogaClassDTO expectedYogaClass = new YogaClassDTO(-1, "2020-04-21 14:30:00.0", 54);
         String json = GSON.toJson(expectedYogaClass);
         given().contentType(ContentType.JSON)
                 .body(json)

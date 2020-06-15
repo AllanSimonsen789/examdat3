@@ -7,7 +7,6 @@ package entities;
 
 import dto.YogaClassDTO;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,8 +14,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  *
@@ -30,8 +27,7 @@ public class YogaClass implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Temporal(TemporalType.DATE)
-    private Date date;
+    private String courseTime;
     private int room;
     @ManyToOne
     private Course course;
@@ -39,26 +35,26 @@ public class YogaClass implements Serializable {
     public YogaClass() {
     }
 
-    public YogaClass(Date date, int room){
-        this.date = date;
+    public YogaClass(String courseTime, int room){
+        this.courseTime = courseTime;
         this.room = room;
     }
     
-    public YogaClass(int id, Date date, int room){
+    public YogaClass(int id, String  courseTime, int room){
         this.id = id;
-        this.date = date;
+        this.courseTime = courseTime;
         this.room = room;
     }
-    public YogaClass(int id, Date date, int room, Course course) {
+    public YogaClass(int id, String courseTime, int room, Course course) {
         this.id = id;
-        this.date = date;
+        this.courseTime = courseTime;
         this.room = room;
         this.course = course;
     }
     
     public YogaClass(YogaClassDTO ycdto) {
         this.id = ycdto.getId();
-        this.date = ycdto.getDate();
+        this.courseTime = ycdto.getCourseTime();
         this.room = ycdto.getRoom();
     }
     
@@ -71,19 +67,19 @@ public class YogaClass implements Serializable {
         this.id = id;
     }
 
-    public Date getDate() {
-        return date;
+    public String  getCourseTime() {
+        return courseTime;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setcourseTime(String  courseTime) {
+        this.courseTime = courseTime;
     }
 
     public int getRoom() {
         return room;
     }
 
-    public void setRoome(int room) {
+    public void setRoom(int room) {
         this.room = room;
     }
 
@@ -98,9 +94,9 @@ public class YogaClass implements Serializable {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 97 * hash + Objects.hashCode(this.date);
-        hash = 97 * hash + this.room;
-        hash = 97 * hash + Objects.hashCode(this.course);
+        hash = 29 * hash + Objects.hashCode(this.courseTime);
+        hash = 29 * hash + this.room;
+        hash = 29 * hash + Objects.hashCode(this.course);
         return hash;
     }
 
@@ -119,7 +115,7 @@ public class YogaClass implements Serializable {
         if (this.room != other.room) {
             return false;
         }
-        if (!Objects.equals(this.date, other.date)) {
+        if (!Objects.equals(this.courseTime, other.courseTime)) {
             return false;
         }
         if (!Objects.equals(this.course, other.course)) {
@@ -128,9 +124,10 @@ public class YogaClass implements Serializable {
         return true;
     }
 
+    
     @Override
     public String toString() {
-        return "YogaClass{" + "id=" + id + ", date=" + date + ", room=" + room + ", course=" + course + '}';
+        return "YogaClass{" + "id=" + id + ", courseTime=" + courseTime + ", room=" + room + ", course=" + course + '}';
     }
 
     
