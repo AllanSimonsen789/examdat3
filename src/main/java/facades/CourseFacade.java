@@ -5,6 +5,7 @@ import dto.CourseListDTO;
 import dto.YogaClassDTO;
 import entities.Course;
 import entities.YogaClass;
+import errorhandling.NotFoundException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.persistence.EntityManager;
@@ -119,14 +120,14 @@ public class CourseFacade {
         return true;
     }
     
-    public YogaClassDTO addYogaClassToCourse(YogaClassDTO ycdto) throws SQLException{
+    public YogaClassDTO addYogaClassToCourse(YogaClassDTO ycdto) throws NotFoundException{
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
             Course course = em.find(Course.class, ycdto.getCourseID());
             em.getTransaction().commit();
             if (course == null) {
-                throw new SQLException("Nothing found with id.");
+                throw new NotFoundException("Could not find course with provided ID");
             }
             YogaClass yc = new YogaClass(ycdto);
             yc.setCourse(course);

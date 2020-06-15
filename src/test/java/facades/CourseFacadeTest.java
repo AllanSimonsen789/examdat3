@@ -3,6 +3,7 @@ package facades;
 import dto.CourseDTO;
 import dto.YogaClassDTO;
 import entities.Course;
+import errorhandling.NotFoundException;
 import java.sql.SQLException;
 import java.util.Date;
 import javax.persistence.EntityManager;
@@ -130,7 +131,7 @@ public class CourseFacadeTest {
     }
     
     @Test
-    public void test_addYogaClass_ReturnsNewYogaClass_EqualResults() throws SQLException {
+    public void test_addYogaClass_ReturnsNewYogaClass_EqualResults() throws NotFoundException {
         YogaClassDTO expectedYogaClass = new YogaClassDTO(new Date(2020, 06, 15, 14, 50, 00), 1,c2.getId());
         YogaClassDTO resultYogaClass = facade.addYogaClassToCourse(expectedYogaClass);
         assertNotNull(resultYogaClass.getId());
@@ -138,5 +139,17 @@ public class CourseFacadeTest {
         assertEquals(expectedYogaClass.getRoom(), resultYogaClass.getRoom());
         assertEquals(expectedYogaClass.getCourseID(), resultYogaClass.getCourseID());
 
+    }
+    
+    @Test
+    public void test_addYogaClass_InvalidCourseID_ExceptionAssertion() throws NotFoundException {
+        YogaClassDTO expectedYogaClass = new YogaClassDTO(new Date(2020, 06, 15, 14, 50, 00), 1, -1);
+        Exception exception = assertThrows(NotFoundException.class, () -> {
+            YogaClassDTO resultYogaClass = facade.addYogaClassToCourse(expectedYogaClass);
+
+        });
+        String expectedMessage = "Could not find course with provided ID";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 }

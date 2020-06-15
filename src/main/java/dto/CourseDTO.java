@@ -6,6 +6,9 @@
 package dto;
 
 import entities.Course;
+import entities.YogaClass;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -17,6 +20,7 @@ public class CourseDTO {
     private String description;
     private int maxParticipants;
     private double price;
+    private List<YogaClassDTO> classes;
 
     public CourseDTO(Course c) {
         this.id = c.getId();
@@ -24,6 +28,11 @@ public class CourseDTO {
         this.description = c.getDescription();
         this.maxParticipants = c.getMaxParticipants();
         this.price = c.getPrice();
+        classes = new ArrayList<YogaClassDTO>();
+        for(YogaClass yc : c.getClasses()){
+            classes.add(new YogaClassDTO(yc));
+        }
+        
     }
 
     public int getId() {

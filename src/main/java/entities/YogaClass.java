@@ -39,14 +39,25 @@ public class YogaClass implements Serializable {
     public YogaClass() {
     }
 
-    public YogaClass(int id, Date date, int salary, Course course) {
+    public YogaClass(Date date, int room){
+        this.date = date;
+        this.room = room;
+    }
+    
+    public YogaClass(int id, Date date, int room){
         this.id = id;
         this.date = date;
-        this.room = salary;
+        this.room = room;
+    }
+    public YogaClass(int id, Date date, int room, Course course) {
+        this.id = id;
+        this.date = date;
+        this.room = room;
         this.course = course;
     }
     
     public YogaClass(YogaClassDTO ycdto) {
+        this.id = ycdto.getId();
         this.date = ycdto.getDate();
         this.room = ycdto.getRoom();
     }

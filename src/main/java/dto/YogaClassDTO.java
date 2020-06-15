@@ -23,6 +23,12 @@ public class YogaClassDTO {
         this.room = room;
         this.courseID = courseID;
     }
+    
+    public YogaClassDTO(int id, Date date, int room) {
+        this.id = id;
+        this.date = date;
+        this.room = room;
+    }
 
     
     

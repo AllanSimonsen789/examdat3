@@ -7,6 +7,7 @@ package entities;
 
 import dto.CourseDTO;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.Entity;
@@ -44,6 +45,7 @@ public class Course implements Serializable {
         this.description = cdto.getDescription();
         this.maxParticipants = cdto.getMaxParticipants();
         this.price = cdto.getPrice();
+        this.classes = new ArrayList<>();
     }
 
     public Course(String courseName, String description, int maxParticipants, double price) {
@@ -51,6 +53,7 @@ public class Course implements Serializable {
         this.description = description;
         this.maxParticipants = maxParticipants;
         this.price = price;
+        this.classes = new ArrayList<>();
     }
 
     public Course(int id, String courseName, String description, int maxParticipants, double price) {
@@ -59,6 +62,7 @@ public class Course implements Serializable {
         this.description = description;
         this.maxParticipants = maxParticipants;
         this.price = price;
+        this.classes = new ArrayList<>();
     }    
     
     public int getId() {
@@ -101,6 +105,16 @@ public class Course implements Serializable {
         this.price = price;
     }
 
+    public List<YogaClass> getClasses() {
+        return classes;
+    }
+
+    public void setClasses(List<YogaClass> classes) {
+        this.classes = classes;
+    }
+
+    
+    
     @Override
     public int hashCode() {
         int hash = 5;

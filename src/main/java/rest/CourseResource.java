@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dto.CourseDTO;
 import dto.YogaClassDTO;
+import errorhandling.GenericExceptionMapper;
+import errorhandling.NotFoundException;
+import errorhandling.NotFoundExceptionMapper;
 import facades.CourseFacade;
 import facades.YogaClassFacade;
 import java.sql.SQLException;
@@ -28,6 +31,10 @@ public class CourseResource {
             = EMF_Creator.createEntityManagerFactory(EMF_Creator.DbSelector.DEV, EMF_Creator.Strategy.CREATE);
     private static final CourseFacade FACADE = CourseFacade.getCourseFacade(EMF);
     private static final YogaClassFacade YCFACADE = YogaClassFacade.getYogaClassFacade(EMF);
+    private static final GenericExceptionMapper GENERIC_EXCEPTION_MAPPER
+            = new GenericExceptionMapper();
+    private static final NotFoundExceptionMapper NOT_FOUND_MAPPER
+            = new NotFoundExceptionMapper();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @GET
@@ -85,18 +92,26 @@ public class CourseResource {
     @Path("/add/yogaclass")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response addYogaClass(String body) throws SQLException {
+    public Response addYogaClass(String body) {
+        try{
         String returnString = GSON.toJson(FACADE.addYogaClassToCourse(GSON.fromJson(body, YogaClassDTO.class)));
         return Response.ok(returnString).build();
+        } catch (NotFoundException ex) {
+            return NOT_FOUND_MAPPER.toResponse(new NotFoundException(ex.getMessage()));
+        }
     }
     
     @PUT
     @Path("/edit/yogaclass")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response editYogaClass(String body) throws SQLException {
+    public Response editYogaClass(String body){
+        try{
         String returnString = GSON.toJson(YCFACADE.editYogaClass(GSON.fromJson(body, YogaClassDTO.class)));
         return Response.ok(returnString).build();
+        } catch (NotFoundException ex) {
+            return NOT_FOUND_MAPPER.toResponse(new NotFoundException(ex.getMessage()));
+        }
     }
 
     @DELETE
@@ -105,8 +120,8 @@ public class CourseResource {
         try{
             YCFACADE.deleteYogaClass(id);
             return Response.ok("Deleted").build();
-        }catch(SQLException e){
-            return Response.noContent().build();
+        } catch (NotFoundException ex) {
+            return NOT_FOUND_MAPPER.toResponse(new NotFoundException(ex.getMessage()));
         }
     }
 

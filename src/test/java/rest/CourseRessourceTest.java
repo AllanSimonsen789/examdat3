@@ -2,13 +2,16 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dto.YogaClassDTO;
 import entities.Course;
+import entities.YogaClass;
 import io.restassured.RestAssured;
 import static io.restassured.RestAssured.given;
 import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
 import java.net.URI;
 import java.sql.SQLException;
+import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.UriBuilder;
@@ -35,6 +38,7 @@ public class CourseRessourceTest {
     private static final int SERVER_PORT = 7777;
     private static final String SERVER_URL = "http://localhost/api";
     private static Course c1, c2, c3;
+    private static YogaClass yc1;
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     static final URI BASE_URI = UriBuilder.fromUri(SERVER_URL).port(SERVER_PORT).build();
@@ -75,12 +79,16 @@ public class CourseRessourceTest {
         c1 = new Course("How to cope with Exam Pressure", "Learn to control your stress levels during exam period", 40, 200.0);
         c2 = new Course("Advanced Flexibility", "Advanced class! Become more flexible than ever!", 10, 499.95);
         c3 = new Course("Beginner Flexibility", "Learn the basic excersises to become more flexible, this course gives acces to the advanced course", 25, 249.95);
+        yc1 = new YogaClass(new Date(2020, 06, 15, 14, 50, 00), 1);
         try {
             em.getTransaction().begin();
+            em.createNamedQuery("YogaClass.deleteAllRows").executeUpdate();
             em.createNamedQuery("Course.deleteAllRows").executeUpdate();
             em.persist(c1);
             em.persist(c2);
             em.persist(c3);
+            em.persist(yc1);
+            yc1.setCourse(c3);
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -169,5 +177,78 @@ public class CourseRessourceTest {
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode());
     }
+    
+     @Test
+    public void test_addClass_ReturnsNewClass_EqualResults() {
+        YogaClassDTO expectedYogaClass = new YogaClassDTO(new Date(2020, 06, 15, 14, 50, 00), 1,c3.getId());
+        String json = GSON.toJson(expectedYogaClass);
+        given().contentType(ContentType.JSON)
+                .body(json)
+                .when()
+                .post("/course/add/yogaclass")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("id", notNullValue())
+                .body("date", notNullValue())
+                .body("room", is(expectedYogaClass.getRoom()));
+    }
 
+    @Test
+    public void test_addClass_InvalidCourseID_ExceptionAssertion() {
+        YogaClassDTO expectedYogaClass = new YogaClassDTO(new Date(2020, 06, 15, 14, 50, 00), 1,-1);
+        String json = GSON.toJson(expectedYogaClass);
+        given().contentType(ContentType.JSON)
+                .body(json)
+                .when()
+                .post("/course/add/yogaclass")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.NOT_FOUND_404.getStatusCode());
+    }
+    
+        @Test
+    public void test_editClass_ReturnsEditedClass_EqualResults() throws SQLException {     
+        YogaClassDTO expectedYogaClass = new YogaClassDTO(yc1.getId(), new Date(2020, 06, 15, 14, 50, 00), 54);
+        String json = GSON.toJson(expectedYogaClass);
+        given().contentType(ContentType.JSON)
+                .body(json)
+                .when()
+                .put("/course/edit/yogaclass")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("id", notNullValue())
+                .body("date", notNullValue())
+                .body("room", is(expectedYogaClass.getRoom()));
+    }
+    @Test
+    public void test_editClass_InvalidClassID_ExceptionAssertion() {
+        YogaClassDTO expectedYogaClass = new YogaClassDTO(-1, new Date(2020, 06, 15, 14, 50, 00), 54);
+        String json = GSON.toJson(expectedYogaClass);
+        given().contentType(ContentType.JSON)
+                .body(json)
+                .when()
+                .put("/course/edit/yogaclass")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.NOT_FOUND_404.getStatusCode());
+    }
+    
+    @Test
+    public void test_deleteClass_ReturnsTrueBooleanValue_EqualResults() throws SQLException {
+         given().when()
+                .delete("/course/delete/yogaclass/" + yc1.getId())
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode());
+    }
+    @Test
+    public void test_deleteClass_invalidClassID_AssertionException() throws SQLException {
+         given().when()
+                .delete("/course/delete/yogaclass/" + -1)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.NOT_FOUND_404.getStatusCode());
+    }
 }

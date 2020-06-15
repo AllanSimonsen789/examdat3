@@ -2,7 +2,7 @@ package facades;
 
 import dto.YogaClassDTO;
 import entities.YogaClass;
-import java.sql.SQLException;
+import errorhandling.NotFoundException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
@@ -58,13 +58,13 @@ public class YogaClassFacade {
         }
     }
 
-    public YogaClassDTO editYogaClass(YogaClassDTO ycDTO) throws SQLException {
+    public YogaClassDTO editYogaClass(YogaClassDTO ycDTO) throws NotFoundException {
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
             YogaClass yogaclass = em.find(YogaClass.class, ycDTO.getId());
             if (yogaclass == null) {
-                throw new SQLException("Nothing found with id.");
+                throw new NotFoundException("Could not find Class with provided ID");
             }
             yogaclass.setDate(ycDTO.getDate());
             yogaclass.setRoome(ycDTO.getRoom());
@@ -75,13 +75,13 @@ public class YogaClassFacade {
         }
     }
 
-    public boolean deleteYogaClass(int id) throws SQLException {
+    public boolean deleteYogaClass(int id) throws NotFoundException {
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
             YogaClass yogaclass = em.find(YogaClass.class, id);
             if (yogaclass == null) {
-                throw new SQLException("Nothing found with id.");
+                throw new NotFoundException("Could not find Class with provided ID");
             }
             em.remove(yogaclass);
             em.getTransaction().commit();
