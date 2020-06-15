@@ -1,8 +1,10 @@
 package facades;
 
 import dto.CourseDTO;
+import dto.YogaClassDTO;
 import entities.Course;
 import java.sql.SQLException;
+import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.AfterAll;
@@ -38,7 +40,8 @@ public class CourseFacadeTest {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            //em.createNamedQuery("Course.deleteAllRows").executeUpdate();
+            em.createNamedQuery("YogaClass.deleteAllRows").executeUpdate();
+            em.createNamedQuery("Course.deleteAllRows").executeUpdate();
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -53,6 +56,7 @@ public class CourseFacadeTest {
         c3 = new Course("Beginner Flexibility", "Learn the basic excersises to become more flexible, this course gives acces to the advanced course", 25, 249.95);
         try {
             em.getTransaction().begin();
+            em.createNamedQuery("YogaClass.deleteAllRows").executeUpdate();
             em.createNamedQuery("Course.deleteAllRows").executeUpdate();
             em.persist(c1);
             em.persist(c2);
@@ -123,5 +127,16 @@ public class CourseFacadeTest {
         String expectedMessage = "Nothing found with id.";
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
+    }
+    
+    @Test
+    public void test_addYogaClass_ReturnsNewYogaClass_EqualResults() throws SQLException {
+        YogaClassDTO expectedYogaClass = new YogaClassDTO(new Date(2020, 06, 15, 14, 50, 00), 1,c2.getId());
+        YogaClassDTO resultYogaClass = facade.addYogaClassToCourse(expectedYogaClass);
+        assertNotNull(resultYogaClass.getId());
+        assertEquals(expectedYogaClass.getDate(), resultYogaClass.getDate());
+        assertEquals(expectedYogaClass.getRoom(), resultYogaClass.getRoom());
+        assertEquals(expectedYogaClass.getCourseID(), resultYogaClass.getCourseID());
+
     }
 }

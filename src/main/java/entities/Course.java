@@ -7,12 +7,14 @@ package entities;
 
 import dto.CourseDTO;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -30,6 +32,8 @@ public class Course implements Serializable {
     private String description;
     private int maxParticipants;
     private double price;
+    @OneToMany(mappedBy = "course")
+    private List<YogaClass> classes;
 
     public Course() {
     }

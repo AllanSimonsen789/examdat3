@@ -3,7 +3,9 @@ package rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dto.CourseDTO;
+import dto.YogaClassDTO;
 import facades.CourseFacade;
+import facades.YogaClassFacade;
 import java.sql.SQLException;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.Consumes;
@@ -25,6 +27,7 @@ public class CourseResource {
     private static EntityManagerFactory EMF
             = EMF_Creator.createEntityManagerFactory(EMF_Creator.DbSelector.DEV, EMF_Creator.Strategy.CREATE);
     private static final CourseFacade FACADE = CourseFacade.getCourseFacade(EMF);
+    private static final YogaClassFacade YCFACADE = YogaClassFacade.getYogaClassFacade(EMF);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @GET
@@ -54,8 +57,8 @@ public class CourseResource {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public Response addCourse(String body) {
-        String returnRating = GSON.toJson(FACADE.addCourse(GSON.fromJson(body, CourseDTO.class)));
-        return Response.ok(returnRating).build();
+        String returnString = GSON.toJson(FACADE.addCourse(GSON.fromJson(body, CourseDTO.class)));
+        return Response.ok(returnString).build();
     }
 
     @PUT
@@ -63,8 +66,8 @@ public class CourseResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response editCourse(String body) throws SQLException {
-        String returnRating = GSON.toJson(FACADE.editCourse(GSON.fromJson(body, CourseDTO.class)));
-        return Response.ok(returnRating).build();
+        String returnString = GSON.toJson(FACADE.editCourse(GSON.fromJson(body, CourseDTO.class)));
+        return Response.ok(returnString).build();
     }
 
     @DELETE
@@ -72,6 +75,35 @@ public class CourseResource {
     public Response deleteCourse(@PathParam("id") int id) {
         try{
             FACADE.deleteCourse(id);
+            return Response.ok("Deleted").build();
+        }catch(SQLException e){
+            return Response.noContent().build();
+        }
+    }
+    
+    @POST
+    @Path("/add/yogaclass")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response addYogaClass(String body) throws SQLException {
+        String returnString = GSON.toJson(FACADE.addYogaClassToCourse(GSON.fromJson(body, YogaClassDTO.class)));
+        return Response.ok(returnString).build();
+    }
+    
+    @PUT
+    @Path("/edit/yogaclass")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response editYogaClass(String body) throws SQLException {
+        String returnString = GSON.toJson(YCFACADE.editYogaClass(GSON.fromJson(body, YogaClassDTO.class)));
+        return Response.ok(returnString).build();
+    }
+
+    @DELETE
+    @Path("/delete/yogaclass/{id}")
+    public Response deleteYogaClass(@PathParam("id") int id) {
+        try{
+            YCFACADE.deleteYogaClass(id);
             return Response.ok("Deleted").build();
         }catch(SQLException e){
             return Response.noContent().build();

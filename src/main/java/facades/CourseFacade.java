@@ -2,7 +2,9 @@ package facades;
 
 import dto.CourseDTO;
 import dto.CourseListDTO;
+import dto.YogaClassDTO;
 import entities.Course;
+import entities.YogaClass;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.persistence.EntityManager;
@@ -16,6 +18,7 @@ import javax.persistence.TypedQuery;
 public class CourseFacade {
 
     private static CourseFacade instance;
+    private static YogaClassFacade YCFACADE;
     private static EntityManagerFactory emf;
 
     //Private Constructor to ensure Singleton
@@ -31,6 +34,7 @@ public class CourseFacade {
         if (instance == null) {
             emf = _emf;
             instance = new CourseFacade();
+            YCFACADE = YogaClassFacade.getYogaClassFacade(emf);
         }
         return instance;
     }
@@ -48,7 +52,9 @@ public class CourseFacade {
             em.close();
         }
     }
+
     
+
     public CourseListDTO getAllCourses() {
         EntityManager em = getEntityManager();
         try {
@@ -56,7 +62,7 @@ public class CourseFacade {
             TypedQuery<Course> q = em.createQuery("SELECT c FROM Course c ", Course.class);
             em.getTransaction().commit();
             ArrayList<CourseDTO> courses = new ArrayList<>();
-            for(Course c : q.getResultList()){
+            for (Course c : q.getResultList()) {
                 courses.add(new CourseDTO(c));
             }
             return new CourseListDTO(courses);
@@ -64,7 +70,7 @@ public class CourseFacade {
             em.close();
         }
     }
-    
+
     public CourseDTO addCourse(CourseDTO c) {
         EntityManager em = getEntityManager();
         Course course = new Course(c);
@@ -111,6 +117,23 @@ public class CourseFacade {
             em.close();
         }
         return true;
+    }
+    
+    public YogaClassDTO addYogaClassToCourse(YogaClassDTO ycdto) throws SQLException{
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Course course = em.find(Course.class, ycdto.getCourseID());
+            em.getTransaction().commit();
+            if (course == null) {
+                throw new SQLException("Nothing found with id.");
+            }
+            YogaClass yc = new YogaClass(ycdto);
+            yc.setCourse(course);
+            return YCFACADE.addYogaClass(yc);
+        } finally {
+            em.close();
+        }
     }
 
 }
