@@ -6,49 +6,28 @@ package dto;
  */
 public class CompleteDTO {
 
-    private final String movieReleased;
-    private final String movieRuntime;
-    private final String movieTitle;
-    private final String jokeId;
-    private final String jokeValue;
-    private final String kanyeRest;
+    private final ChuckDTO chuckQoute;
+    private final KanyeRestDTO kanyeRestQoute;
 
-    public CompleteDTO(OmdbApiDTO omdb, ChuckDTO cdto, KanyeRestDTO kanye) {
-        this.movieReleased = omdb.getReleased();
-        this.movieRuntime = omdb.getRuntime();
-        this.movieTitle = omdb.getTitle();
-        this.jokeId = cdto.getId();
-        this.jokeValue = cdto.getValue();
-        this.kanyeRest = kanye.getQuote();
+    public CompleteDTO(ChuckDTO chuckQoute, KanyeRestDTO kanyeRestQoute) {
+        this.kanyeRestQoute = kanyeRestQoute;
+        this.chuckQoute = chuckQoute;
     }
 
-    public String getMovieReleased() {
-        return movieReleased;
+    public ChuckDTO getChuckQoute() {
+        return chuckQoute;
     }
 
-    public String getMovieRuntime() {
-        return movieRuntime;
-    }
-
-    public String getMovieTitle() {
-        return movieTitle;
-    }
-
-    public String getJokeId() {
-        return jokeId;
-    }
-
-    public String getJokeValue() {
-        return jokeValue;
-    }
-
-    public String getKanyeRest() {
-        return kanyeRest;
+    public KanyeRestDTO getKanyeRestQoute() {
+        return kanyeRestQoute;
     }
 
     @Override
     public String toString() {
-        return "CompleteDTO{" + "movieReleased=" + movieReleased + ", movieRuntime=" + movieRuntime + ", movieTitle=" + movieTitle + ", jokeId=" + jokeId + ", jokeValue=" + jokeValue + ", kanyeRest=" + kanyeRest + '}';
+        return "CompleteDTO{" + "chuckQoute=" + chuckQoute + ", kanyeRestQoute=" + kanyeRestQoute + '}';
     }
+
+
+    
 
 }

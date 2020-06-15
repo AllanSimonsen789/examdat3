@@ -17,8 +17,8 @@ import utils.EMF_Creator;
 /**
  * @author allan
  */
-@Path("info")
-public class RoleDemoResource {
+@Path("user")
+public class UserResource {
 
     private static EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory(EMF_Creator.DbSelector.DEV, EMF_Creator.Strategy.CREATE);
 
