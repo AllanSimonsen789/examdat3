@@ -87,7 +87,7 @@ public class CourseFacadeTest {
 
     @Test
     public void test_editCourse_ReturnsEditedCourse_EqualResults() throws SQLException {
-        Course expectedCourse = new Course(c1.getId(),"testCourse", "testCourse", 10, 10.0);
+        Course expectedCourse = new Course(c1.getId(), "testCourse", "testCourse", 10, 10.0);
         Course resultCourse = new Course(facade.editCourse(new CourseDTO(expectedCourse)));
         assertEquals(c1.getId(), resultCourse.getId());
         assertEquals(expectedCourse.getCourseName(), resultCourse.getCourseName());
@@ -95,11 +95,11 @@ public class CourseFacadeTest {
         assertEquals(expectedCourse.getMaxParticipants(), resultCourse.getMaxParticipants());
         assertEquals(expectedCourse.getPrice(), resultCourse.getPrice());
     }
-    
-     @Test
-    public void test_editCourse_InvalidCourseID_ExceptionAssertion(){
-        Course expectedCourse = new Course(-1,"testCourse", "testCourse", 10, 10.0);
-         Exception exception = assertThrows(SQLException.class, () -> {
+
+    @Test
+    public void test_editCourse_InvalidCourseID_ExceptionAssertion() {
+        Course expectedCourse = new Course(-1, "testCourse", "testCourse", 10, 10.0);
+        Exception exception = assertThrows(SQLException.class, () -> {
             facade.editCourse(new CourseDTO(expectedCourse));
 
         });
@@ -110,7 +110,18 @@ public class CourseFacadeTest {
 
     @Test
     public void test_deleteCourse_ReturnsTrueBooleanValue_EqualResults() throws SQLException {
-        assertTrue(facade.deleteCourse(new CourseDTO(c1)));
+        assertTrue(facade.deleteCourse(c1.getId()));
 
+    }
+
+    @Test
+    public void test_deleteCourse_InvalidCourseID_ExceptionAssertion() {
+        Exception exception = assertThrows(SQLException.class, () -> {
+            assertTrue(facade.deleteCourse(-1));
+
+        });
+        String expectedMessage = "Nothing found with id.";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 }

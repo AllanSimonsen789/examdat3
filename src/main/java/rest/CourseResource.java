@@ -2,8 +2,8 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import facades.FacadeExample;
+import dto.CourseDTO;
+import facades.CourseFacade;
 import java.sql.SQLException;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.Consumes;
@@ -15,19 +15,16 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import utils.EMF_Creator;
 
 //Todo Remove or change relevant parts before ACTUAL use
 @Path("course")
 public class CourseResource {
 
-    private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory(
-            "pu",
-            "jdbc:mysql://localhost:3307/startcode",
-            "dev",
-            "ax2",
-            EMF_Creator.Strategy.CREATE);
-    private static final FacadeExample FACADE = FacadeExample.getFacadeExample(EMF);
+    private static EntityManagerFactory EMF
+            = EMF_Creator.createEntityManagerFactory(EMF_Creator.DbSelector.DEV, EMF_Creator.Strategy.CREATE);
+    private static final CourseFacade FACADE = CourseFacade.getCourseFacade(EMF);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @GET
@@ -40,31 +37,45 @@ public class CourseResource {
     @Path("/count")
     @Produces({MediaType.APPLICATION_JSON})
     public String getRenameMeCount() {
-        long count = FACADE.getRenameMeCount();
+        long count = FACADE.getCourseCount();
         return "{\"count\":" + count + "}";  //Done manually so no need for a DTO
+    }
+    
+    @GET
+    @Path("/all")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getAllCourses() {
+        String returnString = GSON.toJson(FACADE.getAllCourses());
+        return Response.ok(returnString).build();
     }
 
     @POST
-    @Path("/post")
+    @Path("/add")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public String addRenameMe(String body) {
-        return GSON.toJson(FACADE.addRenameMe(GSON.fromJson(body, JsonObject.class).get("string").getAsString()));
+    public Response addCourse(String body) {
+        String returnRating = GSON.toJson(FACADE.addCourse(GSON.fromJson(body, CourseDTO.class)));
+        return Response.ok(returnRating).build();
     }
 
     @PUT
-    @Path("/edit/{id}")
+    @Path("/edit")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String editPersonOnId(String body, @PathParam("id") Long id) throws SQLException {
-        return GSON.toJson(FACADE.editRenameMe(GSON.fromJson(body, JsonObject.class).get("string").getAsString(), id));
+    public Response editCourse(String body) throws SQLException {
+        String returnRating = GSON.toJson(FACADE.editCourse(GSON.fromJson(body, CourseDTO.class)));
+        return Response.ok(returnRating).build();
     }
-    
+
     @DELETE
     @Path("/delete/{id}")
-    public void addRenameMe(@PathParam("id") Long id) throws SQLException{
-        FACADE.delete(id);
+    public Response deleteCourse(@PathParam("id") int id) {
+        try{
+            FACADE.deleteCourse(id);
+            return Response.ok("Deleted").build();
+        }catch(SQLException e){
+            return Response.noContent().build();
+        }
     }
-    
-    
+
 }

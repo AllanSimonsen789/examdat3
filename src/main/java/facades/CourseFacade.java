@@ -97,18 +97,14 @@ public class CourseFacade {
         }
     }
 
-    public boolean deleteCourse(CourseDTO cdto) throws SQLException {
+    public boolean deleteCourse(int id) throws SQLException {
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
-            Course course = em.find(Course.class, cdto.getId());
-            System.out.println(course);
-            System.out.println(cdto);
-
+            Course course = em.find(Course.class, id);
             if (course == null) {
                 throw new SQLException("Nothing found with id.");
             }
-            System.out.println(course);
             em.remove(course);
             em.getTransaction().commit();
         } finally {
