@@ -129,7 +129,7 @@ public class CourseFacade {
             Course course = em.find(Course.class, ycdto.getCourseID());
             
             if (course == null) {
-                throw new NotFoundException("Could not find course with provided ID");
+                throw new NotFoundException("Could not find course with provided ID xxx");
             }
             YogaClass yc = new YogaClass(ycdto);
             yc.setCourse(course);
